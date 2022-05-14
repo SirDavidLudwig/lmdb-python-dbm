@@ -61,7 +61,7 @@ class Lmdb(MutableMapping, Generic[KT, VT]):
 
     @classmethod
     def open(
-        cls, file: str, flag: str = "r", mode: int = 0o755, map_size: int = 2**20, autogrow: bool = True
+        cls, file: str, flag: str = "r", mode: int = 0o755, map_size: int = 2**20, autogrow: bool = True, lock = True
     ) -> "Lmdb":
 
         """
@@ -72,9 +72,10 @@ class Lmdb(MutableMapping, Generic[KT, VT]):
         `autogrow`: Automatically grow the database size when `map_size` is exceeded.
                 WARNING: Set this to `False` for multi-process write access.
         """
+        assert not lock or "r", "Lock can only be disabled for read-only instances."
 
         if flag == "r":  # Open existing database for reading only (default)
-            env = lmdb.open(file, map_size=map_size, max_dbs=1, readonly=True, create=False, mode=mode)
+            env = lmdb.open(file, map_size=map_size, max_dbs=1, readonly=True, create=False, mode=mode, lock=lock)
         elif flag == "w":  # Open existing database for reading and writing
             env = lmdb.open(file, map_size=map_size, max_dbs=1, readonly=False, create=False, mode=mode)
         elif flag == "c":  # Open database for reading and writing, creating it if it doesn't exist
