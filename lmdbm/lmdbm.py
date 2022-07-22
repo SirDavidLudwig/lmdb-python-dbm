@@ -72,7 +72,7 @@ class Lmdb(MutableMapping, Generic[KT, VT]):
         `autogrow`: Automatically grow the database size when `map_size` is exceeded.
                 WARNING: Set this to `False` for multi-process write access.
         """
-        assert not lock or "r", "Lock can only be disabled for read-only instances."
+        assert lock or flag == "r", "Lock can only be disabled for read-only instances."
 
         if flag == "r":  # Open existing database for reading only (default)
             env = lmdb.open(file, map_size=map_size, max_dbs=1, readonly=True, create=False, mode=mode, lock=lock)
